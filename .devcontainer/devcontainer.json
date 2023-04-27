@@ -1,0 +1,12 @@
+{
+    "image": "mcr.microsoft.com/vscode/devcontainers/rust",
+    "forwardPorts": [],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+				"rust-lang.rust-analyzer",
+				"vadimcn.vscode-lldb"
+			]
+        }
+    }
+}
