@@ -6,7 +6,7 @@ use std::fs::File;
 
 /// An error that occurred while getting a configuration value.
 pub enum GetFileError<TargetType> where TargetType: TryFrom<String> {
-    CannotReadEnvVar(std::env::VarError),
+    CannotReadEnvVar(env::VarError),
     CannotOpenFile(std::io::Error),
     CannotReadFile(std::io::Error),
     CannotConvertValue(<TargetType as TryFrom<String>>::Error),
