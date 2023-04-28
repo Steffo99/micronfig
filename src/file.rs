@@ -5,6 +5,7 @@
 pub fn get<Key, Type>(name: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
+          <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
     let path = std::env::var(name)
         .map_err(Error::CannotReadEnvVar)?;
@@ -27,8 +28,9 @@ pub fn get<Key, Type>(name: Key) -> Result<Type>
 
 
 /// A possible error encountered by [`get`].
-#[derive(Debug)]
+#[derive(std::fmt::Debug)]
 pub enum Error<ConversionError>
+    where ConversionError: std::fmt::Debug,
 {
     /// The environment variable could not be read.
     ///

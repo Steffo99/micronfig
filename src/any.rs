@@ -1,19 +1,26 @@
-//! Module defining the general [`get`] low-level function and its associated [`Source`] type.
+//! Module defining the general [`value`] high-level function, the general [`get`] low-level function, and its associated [`Source`] type.
 
+use std::ffi::OsString;
 use crate::var;
 use crate::file;
 
 
-/// Get a configuration value, maintaining information about how the value was retrieved.
+/// Get a configuration value from the first available source and convert it to the given `Type`, additionally returning information about how the value was retrieved.
+///
+/// # Process
 ///
 /// This function tries to get a configuration value:
 ///
-/// 1. with [`var::get`] using `name_var`, returning a [`Source::Var`]
-/// 2. with [`file::get`] using `name_file`, returning a [`Source::File`]
+/// 1. with [`var::get`] using `name`, returning a [`Source::Var`]
+/// 2. with [`file::get`] using `name + file_suffix`, returning a [`Source::File`]
 ///
-/// If none of these options successfully resulted in the successful retrieval of the configuration value, [`Source::NotFound`] is returned.
+/// If none of these options successfully resulted in the successful retrieval of the configuration value, [`Source::NotFound`] is returned instead.
 ///
-/// All errors are bubbled up, except the ones surfacing because of the total absence of a configuration value, currently:
+/// # Errors
+///
+/// All errors are bubbled up, except the ones surfacing because of the total absence of a configuration value, which make the function try the next available source.
+///
+/// Currently, those are:
 /// - [`var::Error::CannotReadEnvVar`]
 /// - [`file::Error::CannotReadEnvVar`]
 ///
@@ -27,7 +34,7 @@ use crate::file;
 /// # std::env::set_var("NUMBER", "1");
 /// # std::env::remove_var("NUMBER_FILE");
 ///
-/// let value = get::<&str, &str, u32>("NUMBER", "NUMBER_FILE");
+/// let value = get::<&str, &str, u32>("NUMBER", "_FILE");
 /// if let Source::Var(Ok(1)) = value {} else { panic!() }
 /// ```
 ///
@@ -39,22 +46,26 @@ use crate::file;
 /// # std::env::remove_var("NUMBER");
 /// # std::env::remove_var("NUMBER_FILE");
 ///
-/// let value = get::<&str, &str, u32>("NUMBER", "NUMBER_FILE");
+/// let value = get::<&str, &str, u32>("NUMBER", "_FILE");
 /// if let Source::NotFound = value {} else { panic!() }
 /// ```
 ///
-pub fn get<KeyVar, KeyFile, Type>(name_var: KeyVar, name_file: KeyFile) -> Source<Type>
+pub fn get<KeyVar, KeyFile, Type>(name: KeyVar, file_suffix: KeyFile) -> Source<Type>
     where KeyVar: AsRef<std::ffi::OsStr>,
           KeyFile: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
+          <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
-    let v = var::get(name_var);
+    let v = var::get(&name);
 
     match v {
         Err(var::Error::CannotReadEnvVar(_)) => {},
         _ => return Source::Var(v),
     }
 
+    let mut name_file = OsString::new();
+    name_file.push(name);
+    name_file.push(file_suffix);
     let v = file::get(name_file);
 
     match v {
@@ -72,6 +83,7 @@ pub fn get<KeyVar, KeyFile, Type>(name_var: KeyVar, name_file: KeyFile) -> Sourc
 #[non_exhaustive]
 pub enum Source<Type>
     where Type: std::str::FromStr,
+          <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
     /// The result was not obtained, since the configuration value was not defined anywhere.
     NotFound,
@@ -85,6 +97,7 @@ pub enum Source<Type>
 
 impl<Type> Source<Type>
     where Type: std::str::FromStr,
+          <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
     /// Returns any contained [`Ok`] value, consuming both `self` and the [`Source`] inside.
     ///
@@ -130,8 +143,6 @@ impl<Type> Source<Type>
     ///
     /// This function panics if `self` is a [`Source::NotFound`], or if the contained value is a [`Err`].
     ///
-    /// The panic message is the `msg` given.
-    ///
     /// # See also
     ///
     /// Similar to [`Result::unwrap`].
@@ -171,7 +182,7 @@ pub(crate) mod tests {
         std::env::set_var("NUMBER", "1");
         std::env::remove_var("NUMBER_FILE");
 
-        match get::<&str, &str, u32>("NUMBER", "NUMBER_FILE") {
+        match get::<&str, &str, u32>("NUMBER", "_FILE") {
             Source::Var(Ok(1u32)) => {},
             _ => panic!("expected Source::Var(Ok(1u32))")
         }
@@ -183,7 +194,7 @@ pub(crate) mod tests {
         std::env::remove_var("NUMBER");
         std::env::set_var("NUMBER_FILE", file.as_os_str());
 
-        let n = get::<&str, &str, u32>("NUMBER", "NUMBER_FILE");
+        let n = get::<&str, &str, u32>("NUMBER", "_FILE");
         match n {
             Source::File(Ok(1u32)) => {},
             _ => panic!("expected Source::File(Ok(1u32))")
@@ -192,7 +203,7 @@ pub(crate) mod tests {
 
     #[test]
     fn missing_envvar() {
-        match get::<&str, &str, String>("MISSING_ENVVAR", "MISSING_ENVVAR_FILE") {
+        match get::<&str, &str, String>("MISSING_ENVVAR", "_FILE") {
             Source::NotFound => {},
             _ => panic!("expected Source::NotFound"),
         }
@@ -203,7 +214,7 @@ pub(crate) mod tests {
         std::env::remove_var("NUMBER");
         std::env::set_var("NUMBER_FILE", "/this/file/does/not/exist");
 
-        match get::<&str, &str, u32>("NUMBER", "NUMBER_FILE") {
+        match get::<&str, &str, u32>("NUMBER", "_FILE") {
             Source::File(Err(file::Error::CannotOpenFile(_))) => {},
             _ => panic!("expected Source::File(Err(file::Error::CannotOpenFile(_)))"),
         }
@@ -214,7 +225,7 @@ pub(crate) mod tests {
         std::env::set_var("NUMBER", "XYZ");
         std::env::remove_var("NUMBER_FILE");
 
-        match get::<&str, &str, u32>("NUMBER", "NUMBER_FILE") {
+        match get::<&str, &str, u32>("NUMBER", "_FILE") {
             Source::Var(Err(var::Error::CannotConvertValue(_))) => {},
             _ => panic!("expected Source::Var(Err(var::Error::CannotConvertValue(_)))"),
         }
@@ -226,7 +237,7 @@ pub(crate) mod tests {
         std::env::set_var("NUMBER_FILE", file.as_os_str());
         std::env::remove_var("NUMBER");
 
-        match get::<&str, &str, u32>("NUMBER", "NUMBER_FILE") {
+        match get::<&str, &str, u32>("NUMBER", "_FILE") {
             Source::File(Err(file::Error::CannotConvertValue(_))) => {},
             _ => panic!("expected Source::File(Err(file::Error::CannotConvertValue(_)))"),
         }

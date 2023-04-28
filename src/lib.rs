@@ -8,29 +8,134 @@
 //!
 //! This crate handles:
 //!
-//! 1. Retrieval of configuration values from multiple sources ([`any::get`])
-//!     1. The environment ([`var::get`])
-//!     2. Files specified in the environment ([`file::get`])
-//! 2. Conversion to a value of an arbitrary type ([`std::str::FromStr`])
-//! 3. Displaying a operator-friendly error in case
-//!
-//! # Usage
-//!
-//! The following example:
-//!
-//! 1. Tries to retrieve the value of the configuration value `THIS_ENVVAR_CONTAINS_ONE`
-//!     1. From the `THIS_ENVVAR_CONTAINS_ONE` environment variable
-//!     2. From the contents of the file specified in the `THIS_ENVVAR_CONTAINS_ONE_FILE` environment variable
-//! 2. It converts the value to a [`u8`]
-//! 3. Panics with a operator-friendly error if any of these steps failed
-//!
-//! ```
-//! todo!()
-//! ```
+//! 1. Retrieval of configuration values from multiple sources
+//!     1. The environment
+//!     2. Files specified in the environment
+//! 2. Conversion to a value of an arbitrary type
+//! 3. Displaying a operator-friendly error if case one of this steps did not succeed
 
 pub mod any;
 pub mod var;
 pub mod file;
+
+/// Get the configuration value with the given `name` and convert it to the given `Type`.
+///
+/// # Panics
+///
+/// Any error encountered by this function causes a panic with a message describing what went wrong.
+///
+/// The same thing happens if the configuration value could not be retrieved by any source.
+///
+/// # Examples
+///
+/// ```
+/// // The NUMBER envvar has been previously set to "1".
+/// # std::env::set_var("NUMBER", "1");
+/// # std::env::remove_var("NUMBER_FILE");
+///
+/// let value: u8 = micronfig::required("NUMBER");
+/// assert_eq!(value, 1u8);
+/// ```
+///
+/// ```should_panic
+/// // The NUMBER envvar has not been set.
+/// # std::env::remove_var("NUMBER");
+/// # std::env::remove_var("NUMBER_FILE");
+///
+/// let value: u8 = micronfig::required("NUMBER");
+/// // Panic: The configuration value NUMBER is not defined.
+/// ```
+///
+/// # See also
+///
+/// [`any::get`], the function called by this one to get the configuration value.
+///
+pub fn required<Type>(name: &str) -> Type
+    where Type: std::str::FromStr,
+          <Type as std::str::FromStr>::Err: std::fmt::Debug,
+{
+    use crate::any::{get, Source};
+
+    match get(name, "_FILE") {
+        Source::Var(Ok(v)) => v,
+        Source::Var(Err(var::Error::CannotConvertValue(_))) =>
+            panic!("The contents of the {} environment variable could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::Var(Err(var::Error::CannotReadEnvVar(_))) =>
+            panic!("Something unexpected happened in micronfig. Please report this as a bug!"),
+
+        Source::File(Ok(v)) => v,
+        Source::File(Err(file::Error::CannotConvertValue(_))) =>
+            panic!("The contents of the file at {} could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::File(Err(file::Error::CannotOpenFile(err))) =>
+            panic!("The file at {} could not be opened: {}", &name, &err),
+        Source::File(Err(file::Error::CannotReadFile(err))) =>
+            panic!("The contents of the file at {} could not be read: {}", &name, &err),
+        Source::File(Err(file::Error::CannotReadEnvVar(_))) =>
+            panic!("Something unexpected happened in micronfig. Please report this as a bug!"),
+
+        Source::NotFound =>
+            panic!("The configuration value {} is not defined.", &name),
+    }
+}
+
+
+/// Get the configuration value with the given `name` and convert it to the given `Type`, if it was defined somewhere.
+///
+/// # Panics
+///
+/// Any error encountered by this function causes a panic with a message describing what went wrong.
+///
+/// # Examples
+///
+/// ```
+/// // The NUMBER envvar has been previously set to "1".
+/// # std::env::set_var("NUMBER", "1");
+/// # std::env::remove_var("NUMBER_FILE");
+///
+/// let value: Option<u8> = micronfig::optional("NUMBER");
+/// assert_eq!(value, Some(1u8));
+/// ```
+///
+/// ```
+/// // The NUMBER envvar has not been set.
+/// # std::env::remove_var("NUMBER");
+/// # std::env::remove_var("NUMBER_FILE");
+///
+/// let value: Option<u8> = micronfig::optional("NUMBER");
+/// assert_eq!(value, None);
+/// ```
+///
+/// # See also
+///
+/// [`any::get`], the function called by this one to get the configuration value.
+///
+pub fn optional<Type>(name: &str) -> Option<Type>
+    where Type: std::str::FromStr,
+          <Type as std::str::FromStr>::Err: std::fmt::Debug,
+{
+    use crate::any::{get, Source};
+
+    match get(name, "_FILE") {
+        Source::Var(Ok(v)) => Some(v),
+        Source::Var(Err(var::Error::CannotConvertValue(_))) =>
+            panic!("The contents of the {} environment variable could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::Var(Err(var::Error::CannotReadEnvVar(_))) =>
+            panic!("Something unexpected happened in micronfig. Please report this as a bug!"),
+
+        Source::File(Ok(v)) => Some(v),
+        Source::File(Err(file::Error::CannotConvertValue(_))) =>
+            panic!("The contents of the file at {} could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::File(Err(file::Error::CannotOpenFile(err))) =>
+            panic!("The file at {} could not be opened: {}", &name, &err),
+        Source::File(Err(file::Error::CannotReadFile(err))) =>
+            panic!("The contents of the file at {} could not be read: {}", &name, &err),
+        Source::File(Err(file::Error::CannotReadEnvVar(_))) =>
+            panic!("Something unexpected happened in micronfig. Please report this as a bug!"),
+
+        Source::NotFound => None,
+
+    }
+}
 
 
 #[cfg(test)]
