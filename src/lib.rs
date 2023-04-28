@@ -58,14 +58,14 @@ pub fn required<Type>(name: &str) -> Type
 
     match get(name, "_FILE") {
         Source::Var(Ok(v)) => v,
-        Source::Var(Err(var::Error::CannotConvertValue(_))) =>
-            panic!("The contents of the {} environment variable could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::Var(Err(var::Error::CannotConvertValue(err))) =>
+            panic!("The contents of the {} environment variable could not be converted to a {}: {:?}", &name, &std::any::type_name::<Type>(), &err),
         Source::Var(Err(var::Error::CannotReadEnvVar(_))) =>
             panic!("Something unexpected happened in micronfig. Please report this as a bug!"),
 
         Source::File(Ok(v)) => v,
-        Source::File(Err(file::Error::CannotConvertValue(_))) =>
-            panic!("The contents of the file at {} could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::File(Err(file::Error::CannotConvertValue(err))) =>
+            panic!("The contents of the file at {} could not be converted to a {}: {:?}", &name, &std::any::type_name::<Type>(), &err),
         Source::File(Err(file::Error::CannotOpenFile(err))) =>
             panic!("The file at {} could not be opened: {}", &name, &err),
         Source::File(Err(file::Error::CannotReadFile(err))) =>
@@ -117,14 +117,14 @@ pub fn optional<Type>(name: &str) -> Option<Type>
 
     match get(name, "_FILE") {
         Source::Var(Ok(v)) => Some(v),
-        Source::Var(Err(var::Error::CannotConvertValue(_))) =>
-            panic!("The contents of the {} environment variable could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::Var(Err(var::Error::CannotConvertValue(err))) =>
+            panic!("The contents of the {} environment variable could not be converted to a {}: {:?}", &name, &std::any::type_name::<Type>(), &err),
         Source::Var(Err(var::Error::CannotReadEnvVar(_))) =>
             panic!("Something unexpected happened in micronfig. Please report this as a bug!"),
 
         Source::File(Ok(v)) => Some(v),
-        Source::File(Err(file::Error::CannotConvertValue(_))) =>
-            panic!("The contents of the file at {} could not be converted to a {}.", &name, &std::any::type_name::<Type>()),
+        Source::File(Err(file::Error::CannotConvertValue(err))) =>
+            panic!("The contents of the file at {} could not be converted to a {}: {:?}", &name, &std::any::type_name::<Type>(), &err),
         Source::File(Err(file::Error::CannotOpenFile(err))) =>
             panic!("The file at {} could not be opened: {}", &name, &err),
         Source::File(Err(file::Error::CannotReadFile(err))) =>
