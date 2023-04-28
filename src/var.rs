@@ -1,7 +1,7 @@
-//! Module defining a function retrieving a configuration value from the environment.
+//! Module defining the [`get`] low-level function for environment variables, and its associated types.
 
 
-/// Get a value of the requested type from the environment variable with the given name.
+/// Get a configuration value from the environment variable with the given `name`, and convert it to the desired `Type`.
 pub fn get<Key, Type>(name: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
@@ -20,9 +20,13 @@ pub fn get<Key, Type>(name: Key) -> Result<Type>
 #[derive(Debug)]
 pub enum Error<ConversionError> {
     /// The environment variable could not be read.
+    ///
+    /// Encountered when the call to [`std::env::var`] fails.
     CannotReadEnvVar(std::env::VarError),
 
     /// The value could not be converted to the desired type.
+    ///
+    /// Encountered when the call to [`FromStr::from_str`] fails.
     CannotConvertValue(ConversionError),
 }
 
@@ -32,7 +36,7 @@ pub type Result<Type> = std::result::Result<Type, Error<<Type as std::str::FromS
 
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
 
     #[test]
@@ -45,6 +49,8 @@ mod tests {
 
     #[test]
     fn missing_envvar() {
+        std::env::remove_var("THIS_ENVVAR_DOES_NOT_EXIST");
+
         match get::<&str, String>("THIS_ENVVAR_DOES_NOT_EXIST") {
             Err(Error::CannotReadEnvVar(std::env::VarError::NotPresent)) => {},
             _ => panic!("expected Err(Error::CannotReadEnvVar(std::env::VarError::NotPresent))"),

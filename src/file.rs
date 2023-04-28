@@ -1,7 +1,7 @@
-//! Module defining a function retrieving a configuration value from a file at a path specified in the environment.
+//! Module defining the [`get`] low-level function for environment files, and its associated types.
 
 
-/// Get a value of the requested type from the file at the path contained in the environment variable with the given name.
+/// Get a configuration value from the file at the path contained in the environment variable with the given `name`, and convert it to the desired `Type`.
 pub fn get<Key, Type>(name: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
@@ -25,29 +25,39 @@ pub fn get<Key, Type>(name: Key) -> Result<Type>
     Ok(value)
 }
 
+
 /// A possible error encountered by [`get`].
 #[derive(Debug)]
 pub enum Error<ConversionError>
 {
     /// The environment variable could not be read.
+    ///
+    /// Encountered when the call to [`std::env::var`] fails.
     CannotReadEnvVar(std::env::VarError),
 
     /// The specified file could not be opened. (Probably it doesn't exist.)
+    ///
+    /// Encountered when the call to [`std::fs::File::open`] fails.
     CannotOpenFile(std::io::Error),
 
     /// The specified file could not be read.
+    ///
+    /// Encountered when the call to [`std::io::Read::read_to_string`] fails.
     CannotReadFile(std::io::Error),
 
     /// The value could not be converted to the desired type.
+    ///
+    /// Encountered when the call to [`FromStr::from_str`] fails.
     CannotConvertValue(ConversionError),
 }
+
 
 /// A possible error encountered by [`get`].
 pub type Result<Type> = std::result::Result<Type, Error<<Type as std::str::FromStr>::Err>>;
 
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use crate::tests::tempfile_fixture;
 
@@ -62,6 +72,8 @@ mod tests {
 
     #[test]
     fn missing_envvar() {
+        std::env::remove_var("THIS_ENVVAR_DOES_NOT_EXIST_FILE");
+
         match get::<&str, String>("THIS_ENVVAR_DOES_NOT_EXIST_FILE") {
             Err(Error::CannotReadEnvVar(std::env::VarError::NotPresent)) => {},
             _ => panic!("expected Err(Error::CannotReadEnvVar(std::env::VarError::NotPresent))"),
