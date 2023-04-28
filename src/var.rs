@@ -1,13 +1,13 @@
 //! Module defining the [`get`] low-level function for environment variables, and its associated types.
 
 
-/// Get a configuration value from the environment variable with the given `name`, and convert it to the desired `Type`.
-pub fn get<Key, Type>(name: Key) -> Result<Type>
+/// Get a configuration value from the environment variable with the given `key`, and convert it to the desired `Type`.
+pub fn get<Key, Type>(key: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
           <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
-    let data = std::env::var(name)
+    let data = std::env::var(key)
         .map_err(Error::CannotReadEnvVar)?;
 
     let value = Type::from_str(&data)

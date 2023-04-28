@@ -5,14 +5,14 @@ use crate::var;
 use crate::file;
 
 
-/// Get a configuration value from the first available source and convert it to the given `Type`, additionally returning information about how the value was retrieved.
+/// Get a value from the first available source and convert it to the given `Type`, additionally returning information about how the value was retrieved.
 ///
 /// # Process
 ///
 /// This function tries to get a configuration value:
 ///
-/// 1. with [`var::get`] using `name`, returning a [`Source::Var`]
-/// 2. with [`file::get`] using `name + file_suffix`, returning a [`Source::File`]
+/// 1. with [`var::get`] using `key`, returning a [`Source::Var`]
+/// 2. with [`file::get`] using `key + key_suffix_file`, returning a [`Source::File`]
 ///
 /// If none of these options successfully resulted in the successful retrieval of the configuration value, [`Source::NotFound`] is returned instead.
 ///
@@ -50,23 +50,23 @@ use crate::file;
 /// if let Source::NotFound = value {} else { panic!() }
 /// ```
 ///
-pub fn get<KeyVar, KeyFile, Type>(name: KeyVar, file_suffix: KeyFile) -> Source<Type>
-    where KeyVar: AsRef<std::ffi::OsStr>,
-          KeyFile: AsRef<std::ffi::OsStr>,
+pub fn get<Key, KeySuffixFile, Type>(key: Key, key_suffix_file: KeySuffixFile) -> Source<Type>
+    where Key: AsRef<std::ffi::OsStr>,
+          KeySuffixFile: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
           <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
-    let v = var::get(&name);
+    let v = var::get(&key);
 
     match v {
         Err(var::Error::CannotReadEnvVar(_)) => {},
         _ => return Source::Var(v),
     }
 
-    let mut name_file = OsString::new();
-    name_file.push(name);
-    name_file.push(file_suffix);
-    let v = file::get(name_file);
+    let mut key_file = OsString::new();
+    key_file.push(key);
+    key_file.push(key_suffix_file);
+    let v = file::get(key_file);
 
     match v {
         Err(file::Error::CannotReadEnvVar(_)) => {},

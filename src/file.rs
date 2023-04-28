@@ -1,13 +1,13 @@
 //! Module defining the [`get`] low-level function for environment files, and its associated types.
 
 
-/// Get a configuration value from the file at the path contained in the environment variable with the given `name`, and convert it to the desired `Type`.
-pub fn get<Key, Type>(name: Key) -> Result<Type>
+/// Get a configuration value from the file at the path contained in the environment variable with the given `key`, and convert it to the desired `Type`.
+pub fn get<Key, Type>(key: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
           <Type as std::str::FromStr>::Err: std::fmt::Debug,
 {
-    let path = std::env::var(name)
+    let path = std::env::var(key)
         .map_err(Error::CannotReadEnvVar)?;
     let path = std::ffi::OsString::from(path);
     let path = std::path::PathBuf::from(path);
