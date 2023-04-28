@@ -1,4 +1,4 @@
-//! A tiny crate for [twelve-factor app configuration](https://12factor.net/config).
+//! Tiny crate for [twelve-factor app configuration](https://12factor.net/config).
 //!
 //! # Goals
 //!

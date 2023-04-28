@@ -1,9 +1,13 @@
 [package]
 name = "micronfig"
 version = "0.1.0"
+authors = ["Stefano Pigozzi <me@steffo.eu>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Tiny Rust crate for twelve-factor app configuration"
+repository = "https://github.com/Steffo99/micronfig/"
+license = "MIT OR Apache-2.0"
+keywords = ["12 factor app", "configuration", "config", "environment", "envvar"]
+categories = ["config"]
 
 [dependencies]
 
