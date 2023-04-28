@@ -6,7 +6,7 @@ edition = "2021"
 description = "Tiny Rust crate for twelve-factor app configuration"
 repository = "https://github.com/Steffo99/micronfig/"
 license = "MIT OR Apache-2.0"
-keywords = ["12 factor app", "configuration", "config", "environment", "envvar"]
+keywords = ["12-factor-app", "configuration", "config", "environment", "envvar"]
 categories = ["config"]
 
 [dependencies]
