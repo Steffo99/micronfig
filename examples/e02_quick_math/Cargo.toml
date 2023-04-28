@@ -1,0 +1,8 @@
+[package]
+name = "e02_quick_math"
+description = "Performs OPERATOR between FIRST and SECOND."
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+micronfig = { path = "../.." }
