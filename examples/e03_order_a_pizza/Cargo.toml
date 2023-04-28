@@ -1,0 +1,8 @@
+[package]
+name = "e03_order_a_pizza"
+description = "Order a pizza using micronfig!"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+micronfig = { path = "../.." }

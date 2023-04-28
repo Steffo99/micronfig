@@ -1,6 +1,23 @@
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
+
+fn main() {
+    let first: u64 = micronfig::required("FIRST");
+    let second: u64 = micronfig::required("SECOND");
+    let operator: Operator = micronfig::required("OPERATOR");
+
+    let result = match operator {
+        Operator::Sum => first + second,
+        Operator::Subtraction => first - second,
+        Operator::Multiplication => first * second,
+        Operator::Division => first / second,
+    };
+
+    println!("{first} {operator} {second} = {result}")
+}
+
+
 pub enum Operator {
     Sum,
     Subtraction,
@@ -31,22 +48,4 @@ impl Display for Operator {
             Self::Division => "/",
         })
     }
-}
-
-fn main() {
-    let first: u64 = micronfig::get("FIRST")
-        .expect("FIRST operand to be properly defined");
-    let second: u64 = micronfig::get("SECOND")
-        .expect("SECOND operand to be properly defined");
-    let operator: Operator = micronfig::get("OPERATOR")
-        .expect("OPERATOR to be properly defined");
-
-    let result = match operator {
-        Operator::Sum => first + second,
-        Operator::Subtraction => first - second,
-        Operator::Multiplication => first * second,
-        Operator::Division => first / second,
-    };
-
-    println!("{first} {operator} {second} = {result}")
 }

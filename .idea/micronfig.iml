@@ -7,9 +7,11 @@
       <sourceFolder url="file://$MODULE_DIR$/examples/e01_the_cave/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/e02_quick_math/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/e03_order_a_pizza/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/examples/e01_the_cave/target" />
       <excludeFolder url="file://$MODULE_DIR$/examples/e02_quick_math/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/examples/e03_order_a_pizza/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
