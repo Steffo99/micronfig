@@ -1,6 +1,6 @@
 [package]
 name = "micronfig"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Stefano Pigozzi <me@steffo.eu>"]
 edition = "2021"
 description = "Tiny crate for simple configuration management"
