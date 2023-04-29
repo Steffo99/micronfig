@@ -29,13 +29,13 @@
 //!
 //! If no value is found, or if an error occurred while trying to retrieve it, the function panics with a human-readable error message.
 //!
-//! Additionally, they try to parse the value into the requested Rust type using its [`FromStr`] trait.
+//! Additionally, they try to parse the value into the requested Rust type using its [`std::str::FromStr`] trait.
 //!
 //! If the conversion fails, the function panics, again providing a human-readable error message.
 //!
 //! ### Examples
 //!
-//! To require a `IP_ADDRESS` property to be configured, and to parse it as an [`IpAddr`], you may write the following code:
+//! To require a `IP_ADDRESS` property to be configured, and to parse it as an [`std::net::IpAddr`], you may write the following code:
 //!
 //! ```
 //! use std::net::IpAddr;
