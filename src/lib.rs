@@ -93,6 +93,10 @@
 //! # std::env::set_var("IP_ADDRESS", "192.168.1.1");
 //! let ip_addr: IpAddr = get("IP_ADDRESS").expect("IP_ADDRESS envvar to be defined");
 //! ```
+//!
+//! # More examples
+//!
+//! Other examples are provided in the crate source, [inside the `examples/` directory](https://github.com/Steffo99/micronfig/tree/main/examples).
 
 pub mod any;
 pub mod var;
