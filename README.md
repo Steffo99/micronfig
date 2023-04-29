@@ -1,6 +1,6 @@
 # ![](icon.png) micronfig
 
-Tiny Rust crate for twelve-factor app configuration.
+Tiny crate for simple configuration management.
 
 ## Links
 
