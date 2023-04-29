@@ -79,8 +79,8 @@
 //!
 //! Finally, if you want to override the accessed sources, you may use the low level API directly, comprised of the following modules:
 //!
-//! - [`var`] for accessing environment variable
-//! - [`file`] for accessing files with the path defined in environment variables
+//! - [`micronfig::var`] for accessing environment variable
+//! - [`micronfig::file`] for accessing files with the path defined in environment variables
 //!
 //! ### Example
 //!

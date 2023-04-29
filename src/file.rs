@@ -1,4 +1,4 @@
-//! Module defining the [`get`] low-level function for environment files, and its associated types.
+//! Module defining the [`get`] low-level function for environment files, and its [`Error`] and [`Result`] associated types.
 
 
 /// Get a configuration value from the file at the path contained in the environment variable with the given `key`, and convert it to the desired `Type`.

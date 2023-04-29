@@ -1,4 +1,4 @@
-//! Module defining the general [`value`] high-level function, the general [`get`] low-level function, and its associated [`Source`] type.
+//! Module defining the [`get`] low-level function, and its associated [`Source`] type.
 
 use std::ffi::OsString;
 use crate::var;
