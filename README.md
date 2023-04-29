@@ -2,6 +2,10 @@
 
 Tiny crate for simple configuration management.
 
+```rust
+let ip_addr: std::net::IpAddr = micronfig::required("IP_ADDRESS");
+```
+
 ## Links
 
 [![Crates.io](https://img.shields.io/crates/v/micronfig)](https://crates.io/crates/micronfig)
