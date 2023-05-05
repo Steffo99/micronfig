@@ -1,7 +1,39 @@
-//! Module defining the [`get`] low-level function for environment files, and its [`Error`] and [`Result`] associated types.
+//! Contents of files at paths defined by environment variables.
 
 
-/// Get a configuration value from the file at the path contained in the environment variable with the given `key`, and convert it to the desired `Type`.
+/// Get a configuration value from the source.
+///
+/// # Process
+///
+/// This function:
+///
+/// 1. tries to access the environment variable with the given name using [`std::env::var`]
+/// 2. tries to interpret the contents of the environment variable as a [`std::path::PathBuf`]
+/// 3. tries to [`std::fs::File::open`] the file at that path
+/// 4. tries to [`std::io::Read::read_to_string`] the contents of the opened file
+/// 5. tries to convert the obtained value to another of the given type using [`std::str::FromStr::from_str`]
+///
+/// # Examples
+///
+/// Retrieve a configuration value from the `USER_FILE` file, maintaining it as a [`String`]:
+/// ```
+/// use micronfig::single::envfiles::get;
+///
+/// # let filename = micronfig::testing::tempfile_fixture("steffo");
+/// # std::env::set_var("USER_FILE", filename.as_os_str());
+/// let user: String = get("USER_FILE").expect("USER_FILE envvar to be defined");
+/// ```
+///
+/// Retrieve a configuration value from the `IP_ADDRESS_FILE` file, then try to convert it to a [`std::net::IpAddr`]:
+/// ```
+/// use std::net::IpAddr;
+/// use micronfig::single::envfiles::get;
+///
+/// # let filename = micronfig::testing::tempfile_fixture("192.168.1.1");
+/// # std::env::set_var("IP_ADDRESS_FILE", filename.as_os_str());
+/// let ip_addr: IpAddr = get("IP_ADDRESS_FILE").expect("IP_ADDRESS_FILE envvar to be defined");
+/// ```
+///
 pub fn get<Key, Type>(key: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
@@ -49,7 +81,7 @@ pub enum Error<ConversionError>
 
     /// The value could not be converted to the desired type.
     ///
-    /// Encountered when the call to [`FromStr::from_str`] fails.
+    /// Encountered when the call to [`std::str::FromStr::from_str`] fails.
     CannotConvertValue(ConversionError),
 }
 
@@ -61,7 +93,7 @@ pub type Result<Type> = std::result::Result<Type, Error<<Type as std::str::FromS
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
-    use crate::tests::tempfile_fixture;
+    use crate::testing::tempfile_fixture;
 
     #[test]
     fn it_works() {

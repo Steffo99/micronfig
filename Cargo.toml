@@ -1,6 +1,6 @@
 [package]
 name = "micronfig"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Stefano Pigozzi <me@steffo.eu>"]
 edition = "2021"
 description = "Tiny crate for simple configuration management"
@@ -9,7 +9,23 @@ license = "MIT OR Apache-2.0"
 keywords = ["12-factor-app", "configuration", "config", "environment", "envvar"]
 categories = ["config"]
 
-[dependencies]
 
-[dev-dependencies]
-tempfile = "3.5.0"
+[package.metadata.docs.rs]
+all-features = true
+cargo-args = ["--bins"]
+rustdoc-args = ["--document-private-items"]
+
+
+[features]
+default = ["single_envvars", "single_envfiles", "multi", "handle", "macros"]
+single_envvars = []
+single_envfiles = []
+multi = ["single_envvars", "single_envfiles"]
+handle = ["multi"]
+macros = ["lazy_static", "handle"]
+testing = ["tempfile"]
+
+
+[dependencies]
+lazy_static = { version = "1.4.0", optional = true }
+tempfile = { version = "3.5.0", optional = true }

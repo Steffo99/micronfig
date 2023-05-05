@@ -2,8 +2,9 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 
-fn main() {
-    let echo: String = micronfig::required("ECHO");
+micronfig::required!(ECHO, String);
 
-    println!("ECHOing back: {echo}");
+
+fn main() {
+    println!("{}", *ECHO);
 }

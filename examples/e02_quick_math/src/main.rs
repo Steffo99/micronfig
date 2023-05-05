@@ -2,19 +2,20 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 
-fn main() {
-    let first: u64 = micronfig::required("FIRST");
-    let second: u64 = micronfig::required("SECOND");
-    let operator: Operator = micronfig::required("OPERATOR");
+micronfig::required!(FIRST, u64);
+micronfig::required!(SECOND, u64);
+micronfig::required!(OPERATOR, Operator);
 
-    let result = match operator {
-        Operator::Sum => first + second,
-        Operator::Subtraction => first - second,
-        Operator::Multiplication => first * second,
-        Operator::Division => first / second,
+
+fn main() {
+    let result = match *OPERATOR {
+        Operator::Sum => (*FIRST) + (*SECOND),
+        Operator::Subtraction => (*FIRST) - (*SECOND),
+        Operator::Multiplication => (*FIRST) * (*SECOND),
+        Operator::Division => (*FIRST) / (*SECOND),
     };
 
-    println!("{first} {operator} {second} = {result}")
+    println!("{} {} {} = {}", *FIRST, *OPERATOR, *SECOND, result)
 }
 
 

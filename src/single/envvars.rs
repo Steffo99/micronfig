@@ -1,7 +1,34 @@
-//! Module defining the [`get`] low-level function for environment variables, and its [`Error`] and [`Result`] associated types.
+//! Environment variables.
 
 
-/// Get a configuration value from the environment variable with the given `key`, and convert it to the desired `Type`.
+/// Get a configuration value from the source.
+///
+/// # Process
+///
+/// This function:
+///
+/// 1. tries to access the environment variable with the given name using [`std::env::var`]
+/// 2. tries to convert the obtained value to another of the given type using [`std::str::FromStr::from_str`]
+///
+/// # Examples
+///
+/// Retrieve a configuration value from the `USER` environment variable, maintaining it as a [`String`]:
+/// ```
+/// use micronfig::single::envvars::get;
+///
+/// # std::env::set_var("USER", "steffo");
+/// let user: String = get("USER").expect("USER envvar to be defined");
+/// ```
+///
+/// Retrieve a configuration value from the `IP_ADDRESS` environment variable, then try to convert it to a [`std::net::IpAddr`]:
+/// ```
+/// use std::net::IpAddr;
+/// use micronfig::single::envvars::get;
+///
+/// # std::env::set_var("IP_ADDRESS", "192.168.1.1");
+/// let ip_addr: IpAddr = get("IP_ADDRESS").expect("IP_ADDRESS envvar to be defined");
+/// ```
+///
 pub fn get<Key, Type>(key: Key) -> Result<Type>
     where Key: AsRef<std::ffi::OsStr>,
           Type: std::str::FromStr,
@@ -29,7 +56,7 @@ pub enum Error<ConversionError>
 
     /// The value could not be converted to the desired type.
     ///
-    /// Encountered when the call to [`FromStr::from_str`] fails.
+    /// Encountered when the call to [`std::str::FromStr::from_str`] fails.
     CannotConvertValue(ConversionError),
 }
 

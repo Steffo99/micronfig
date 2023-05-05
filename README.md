@@ -3,7 +3,7 @@
 Tiny crate for simple configuration management.
 
 ```rust
-let ip_addr: std::net::IpAddr = micronfig::required("IP_ADDRESS");
+micronfig::required!(IP_ADDRESS, std::net::IpAddr);
 ```
 
 ## Links
