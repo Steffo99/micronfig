@@ -69,7 +69,7 @@ macro_rules! required {
 /// # std::env::set_var("IP_ADDRESS", "192.168.1.1");
 /// # std::env::remove_var("IP_ADDRESS_FILE");
 ///
-/// micronfig::required!(IP_ADDRESS, IpAddr);
+/// micronfig::optional!(IP_ADDRESS, IpAddr);
 /// println!("{:?}", *IP_ADDRESS);
 /// ```
 #[macro_export]
