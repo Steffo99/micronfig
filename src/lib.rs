@@ -27,6 +27,7 @@
 
 #![warn(missing_docs)]
 #![doc(html_logo_url = "https://raw.githubusercontent.com/Steffo99/micronfig/main/icon.png")]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 
 pub mod single;
