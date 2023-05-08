@@ -18,7 +18,7 @@
 /// ```
 /// # std::env::set_var("USER", "steffo");
 /// # std::env::remove_var("USER_FILE");
-///
+/// #
 /// micronfig::required!(USER, String);
 /// println!("{:?}", *USER);
 /// ```
@@ -57,7 +57,7 @@ macro_rules! required {
 /// ```
 /// # std::env::set_var("USER", "steffo");
 /// # std::env::remove_var("USER_FILE");
-///
+/// #
 /// micronfig::optional!(USER, String);
 /// println!("{:?}", *USER);
 /// ```
