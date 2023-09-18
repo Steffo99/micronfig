@@ -11,8 +11,6 @@ micronfig::required!(IP_ADDRESS, std::net::IpAddr);
 [![Crates.io](https://img.shields.io/crates/v/micronfig)](https://crates.io/crates/micronfig)
  
 [![Documentation](https://img.shields.io/docsrs/micronfig)](https://docs.rs/micronfig/latest/micronfig/)
- 
-[![Chat](https://img.shields.io/matrix/micronfig:ryg.one?server_fqdn=matrix.ryg.one)](https://matrix.to/#/#micronfig:ryg.one)
 
 ## Acknowledgements
 
