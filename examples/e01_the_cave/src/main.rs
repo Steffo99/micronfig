@@ -1,5 +1,4 @@
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
+use std::fmt::Display;
 
 
 micronfig::required!(ECHO, String);
