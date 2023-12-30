@@ -17,15 +17,13 @@ rustdoc-args = ["--document-private-items", "--cfg", "docsrs"]
 
 
 [features]
-default = ["single_envvars", "single_envfiles", "multi", "handle", "macros"]
-single_envvars = []
-single_envfiles = []
-multi = ["single_envvars", "single_envfiles"]
-handle = ["multi"]
-macros = ["lazy_static", "handle"]
+default = ["envvars", "envfiles", "envdot"]
+envvars = []
+envfiles = []
+envdot = ["regex"]
 testing = ["tempfile"]
 
-
 [dependencies]
-lazy_static = { version = "1.4.0", optional = true }
-tempfile = { version = "3.5.0", optional = true }
+tempfile = { version = "3.9.0", optional = true }
+regex = { version = "1.10.2", optional = true }
+
