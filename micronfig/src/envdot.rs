@@ -1,7 +1,7 @@
 //! Utilities for fetching configuration values defined in specific `.env` files.
 
 use std::collections::HashMap;
-use std::ffi::OsString;
+use std::ffi::{OsStr, OsString};
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::Read;
@@ -12,11 +12,7 @@ use regex::Regex;
 pub type DotEnv = HashMap<OsString, String>;
 
 /// Parse a `.env` file.
-///
-/// ### Warning
-///
-/// This method isn't properly
-fn parse_dotenv<P>(value: P) -> DotEnv
+pub fn parse_dotenv<P>(value: P) -> DotEnv
 	where P: AsRef<Path> + Debug
 {
 	let mut file = File::open(&value)
@@ -72,8 +68,7 @@ fn parse_dotenv<P>(value: P) -> DotEnv
 }
 
 /// Get the requested variable from a [`DotEnv`] structure.
-pub fn get<Key>(dotenv: &DotEnv, key: Key) -> Option<String>
-	where Key: AsRef<&std::ffi::OsStr>
+pub fn get(dotenv: &DotEnv, key: &OsStr) -> Option<String>
 {
-	dotenv.var(key).map(|v| v.to_owned())
+	dotenv.get(key).map(|v| v.to_owned())
 }

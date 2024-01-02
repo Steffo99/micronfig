@@ -1,5 +1,6 @@
 //! Definition of [`Cache`].
 
+use std::ffi::OsStr;
 use std::fmt::Debug;
 
 /// Cache initialized only once per config block and used to quickly retrieve configuration values.
@@ -26,22 +27,21 @@ impl Cache {
 	}
 
 	/// Get a value from the cache.
-	pub fn get<Key>(&self, key: Key) -> Option<String>
-		where Key: AsRef<&std::ffi::OsStr>
+	pub fn get(&self, key: &OsStr) -> Option<String>
 	{
 		let mut value = None;
 
 		if cfg!(feature = "envfiles") {
-			value = crate::envfiles::get(format!("{key}_FILE"));
+			value = crate::envfiles::get(key);
 		}
 
 		if cfg!(feature = "envvars") && value.is_none() {
-			value = crate::envvars::get(&key);
+			value = crate::envvars::get(key);
 		}
 
 		if cfg!(feature = "envdot") && value.is_none() {
 			for dotenv in self.envdot.iter() {
-				value = crate::envdot::get(dotenv, &key);
+				value = crate::envdot::get(dotenv, key);
 				if value.is_some() {
 					break;
 				}
@@ -59,7 +59,7 @@ impl Cache {
 		where Path: AsRef<std::path::Path> + Debug
 	{
 		self.envdot.push(
-			crate::envdot::DotEnv::from(path)
+			crate::envdot::parse_dotenv(path)
 		);
 	}
 }

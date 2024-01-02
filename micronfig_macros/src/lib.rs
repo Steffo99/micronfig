@@ -1,20 +1,26 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::{quote, quote_spanned};
+use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::{Ident, parse_macro_input, Token, Type};
-use syn::punctuated::{Pair, Punctuated};
+use syn::punctuated::Punctuated;
 
 
-type Config = Punctuated<Config, Token![,]>;
+type Config = Punctuated<ConfigItem, Token![,]>;
 
+#[derive(Clone)]
 struct ConfigItem {
 	identifier: Ident,
-	types: ConfigTypes,
+	types: Vec<ConfigPair>,
 }
 
-type ConfigTypes = Punctuated<Type, Conversion>;
+#[derive(Clone)]
+struct ConfigPair {
+	conversion: Conversion,
+	r#type: Type,
+}
 
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 enum Conversion {
 	From,
 	TryFrom,
@@ -25,8 +31,25 @@ enum Conversion {
 impl Parse for ConfigItem {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
 		let identifier = input.parse::<Ident>()?;
-		let types = input.parse::<Punctuated<Type, Conversion>>()?;
+
+		input.parse::<Token![:]>()?;
+		input.parse::<Type>()?;
+
+		let mut types = vec![];
+		while let Ok(typ) = input.parse::<ConfigPair>() {
+			types.push(typ)
+		}
+
 		Ok(Self { identifier, types })
+	}
+}
+
+impl Parse for ConfigPair {
+	fn parse(input: ParseStream) -> syn::Result<Self> {
+		let conversion = input.parse::<Conversion>()?;
+		let r#type = input.parse::<Type>()?;
+
+		Ok(Self { conversion, r#type })
 	}
 }
 
@@ -49,67 +72,66 @@ impl Parse for Conversion {
 
 #[proc_macro]
 pub fn config(input: TokenStream) -> TokenStream {
-	let input: Config = parse_macro_input!(input as Config);
+	let input: Config = parse_macro_input!(input with syn::punctuated::Punctuated::parse_terminated);
 
-	let cache = quote! {
+	let cache_code = quote! {
 		mod _cache {
-			pub static lock: std::sync::OnceLock<Cache> = std::sync::OnceLock::new();
+			pub static lock: std::sync::OnceLock<micronfig::cache::Cache> = std::sync::OnceLock::new();
 		}
 
-		pub(self) fn _cache() {
+		fn _cache() -> &'static micronfig::cache::Cache {
 			_cache::lock.get_or_init(micronfig::cache::Cache::new)
 		}
 	};
 
-	let items = input.iter().map(|item: ConfigItem| {
-		let identifier = item.identifier;
+	let items = input.iter().map(|item: &ConfigItem| {
+		let identifier = &item.identifier;
+		let identifier_string = identifier.to_string();
 
-		// TODO: Can types be zero-length?
 		let mut conversion_code = quote! {};
-		let mut previous_conversion: Option<&Conversion> = None;
-		for pair in item.types.pairs().into_iter() {
-			let mut current_type: &Type = match pair {
-				Pair::Punctuated(ty, _) => ty,
-				Pair::End(ty) => ty,
+		for ConfigPair { r#type, conversion } in item.types.iter() {
+			let typ = r#type;
+			conversion_code = match conversion {
+				Conversion::From => quote! {
+					#conversion_code
+					let value: Option<#typ> = value.map(Into::into);
+				},
+				Conversion::TryFrom => quote! {
+					#conversion_code
+					let value: Option<#typ> = value
+						.map(|v| v.try_into())
+						.map(|v| v.expect(&format!("to be able to convert {}", #identifier_string))
+					);
+				},
+				Conversion::FromStr => quote! {
+					#conversion_code
+					let value: Option<#typ> = value
+						.map(|v| v.parse())
+						.map(|v| v.expect(&format!("to be able to parse {}", #identifier_string))
+					);
+				},
 			};
-			let next_conversion: Option<&Conversion> = match pair {
-				Pair::Punctuated(_, cv) => Some(cv),
-				_ => None,
-			};
-
-			if let Some(previous_conversion) = previous_conversion {
-				conversion_code = match previous_conversion {
-					Conversion::From => quote! {
-						#conversion_code
-						let value: #current_type = value.into();
-					}
-					Conversion::TryFrom => quote! {
-						#conversion_code
-						let value: #current_type = value.try_into()
-							.expect("to be able to convert {}", stringify!(#identifier));
-					}
-					Conversion::FromStr => quote! {
-						#conversion_code
-						let value: #current_type = value.parse()
-							.expect("to be able to parse {}", stringify!(#identifier));
-					}
-				};
-			}
-
-			previous_conversion = next_conversion;
 		};
 
-		let last_type = item.types.last();
+		let last_type = match item.types.last() {
+			Some(pair) => {
+				let typ = pair.r#type.clone();
+				quote! { #typ }
+			},
+			None => {
+				quote! { String }
+			},
+		};
 
 		quote! {
 			mod #identifier {
-				pub(super) lock: std::sync::OnceLock<#last_type> = std::sync::OnceLock::new();
+				pub(super) static lock: std::sync::OnceLock<Option<#last_type>> = std::sync::OnceLock::new();
 			}
 
-			pub(crate) fn #identifier() {
+			pub(crate) fn #identifier() -> &'static Option<#last_type> {
 				#identifier::lock.get_or_init(|| {
-					let key = stringify!(#identifier);
-					let value = _cache().get(&key);
+					let key: std::ffi::OsString = #identifier_string.into();
+					let value: Option<String> = _cache().get(&key);
 
 					#conversion_code
 
@@ -119,8 +141,20 @@ pub fn config(input: TokenStream) -> TokenStream {
 		}
 	});
 
-	quote! {
-		#cache
-		#items
+	let mut items_code = quote! {};
+	for code in items {
+		items_code = quote! {
+			#items_code
+			#code
+		};
 	}
+
+	let quote = quote! {
+		#cache_code
+		#items_code
+	};
+
+	println!("{quote}");
+
+	quote.into()
 }

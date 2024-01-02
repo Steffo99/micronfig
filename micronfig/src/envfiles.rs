@@ -1,12 +1,13 @@
 //! Contents of files at paths defined by environment variables.
 
+use std::ffi::OsStr;
 use std::io::Read;
 
 /// Get the contents of the file at the path specified by the requested environment variable plus `_FILE`.
-pub fn get<Key>(key: Key) -> Option<String>
-	where Key: AsRef<std::ffi::OsStr>,
-{
-	let path = std::env::var(format!("{key}_FILE")).ok()?;
+pub fn get(key: &OsStr) -> Option<String> {
+	let mut key: std::ffi::OsString = key.to_os_string();
+	key.push("_FILE");
+	let path = std::env::var(key).ok()?;
 
 	let path = std::ffi::OsString::from(path);
 	let path = std::path::PathBuf::from(path);
