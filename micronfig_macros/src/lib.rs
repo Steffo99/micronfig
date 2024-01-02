@@ -65,41 +65,38 @@ pub fn config(input: TokenStream) -> TokenStream {
 		let identifier = item.identifier;
 
 		// TODO: Can types be zero-length?
-
 		let mut conversion_code = quote! {};
-
 		let mut previous_conversion: Option<&Conversion> = None;
-
 		for pair in item.types.pairs().into_iter() {
-			if let Some(some_conversion) = previous_conversion {
-				todo!();
+			let mut current_type: &Type = match pair {
+				Pair::Punctuated(ty, _) => ty,
+				Pair::End(ty) => ty,
+			};
+			let next_conversion: Option<&Conversion> = match pair {
+				Pair::Punctuated(_, cv) => Some(cv),
+				_ => None,
+			};
 
-				match pair {
-					Pair::Punctuated(target_type, new_conversion) => {
-						previous_conversion = Some(new_conversion);
-					}
-					Pair::End(target_type) => {
-
-					}
-				}
-
-				conversion_code = match some_conversion {
+			if let Some(previous_conversion) = previous_conversion {
+				conversion_code = match previous_conversion {
 					Conversion::From => quote! {
-								#conversion_code
-								let value: #target_type = value.into();
-							}
+						#conversion_code
+						let value: #current_type = value.into();
+					}
 					Conversion::TryFrom => quote! {
-								#conversion_code
-								let value: #target_type = value.try_into()
-									.expect("to be able to convert {}", stringify!(#identifier));
-							}
+						#conversion_code
+						let value: #current_type = value.try_into()
+							.expect("to be able to convert {}", stringify!(#identifier));
+					}
 					Conversion::FromStr => quote! {
-								#conversion_code
-								let value: #target_type = value.parse()
-									.expect("to be able to parse {}", stringify!(#identifier));
-							}
+						#conversion_code
+						let value: #current_type = value.parse()
+							.expect("to be able to parse {}", stringify!(#identifier));
+					}
 				};
 			}
+
+			previous_conversion = next_conversion;
 		};
 
 		let last_type = item.types.last();
