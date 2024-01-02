@@ -6,3 +6,5 @@ pub mod envvars;
 pub mod envfiles;
 #[cfg(feature = "envdot")]
 pub mod envdot;
+
+pub use micronfig_macros::config;
