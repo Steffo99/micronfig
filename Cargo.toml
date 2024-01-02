@@ -1,29 +1,5 @@
-[package]
-name = "micronfig"
-version = "0.2.0"
-authors = ["Stefano Pigozzi <me@steffo.eu>"]
-edition = "2021"
-description = "Tiny crate for simple configuration management"
-repository = "https://github.com/Steffo99/micronfig/"
-license = "MIT OR Apache-2.0"
-keywords = ["twelve-factor-app", "configuration", "config", "environment", "envvar"]
-categories = ["config"]
-
-
-[package.metadata.docs.rs]
-all-features = true
-cargo-args = ["--bins"]
-rustdoc-args = ["--document-private-items", "--cfg", "docsrs"]
-
-
-[features]
-default = ["envvars", "envfiles", "envdot"]
-envvars = []
-envfiles = []
-envdot = ["regex"]
-testing = ["tempfile"]
-
-[dependencies]
-tempfile = { version = "3.9.0", optional = true }
-regex = { version = "1.10.2", optional = true }
-
+[workspace]
+members = [
+    "micronfig",
+    "micronfig_macros",
+]
