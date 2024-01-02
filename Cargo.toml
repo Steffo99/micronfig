@@ -3,3 +3,4 @@ members = [
     "micronfig",
     "micronfig_macros",
 ]
+resolver = "2"
