@@ -21,3 +21,4 @@ pass!(string_single_explicit);
 pass!(string_single_implicit);
 pass!(string_multi_explicit);
 pass!(string_multi_implicit);
+pass!(string_multi_mixed);
