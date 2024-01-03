@@ -12,11 +12,12 @@ use regex::Regex;
 pub type DotEnv = HashMap<OsString, String>;
 
 /// Parse a `.env` file.
-pub fn parse_dotenv<P>(value: P) -> DotEnv
+///
+/// Returns [`None`] if no such file is found.
+pub fn parse_dotenv<P>(value: P) -> Option<DotEnv>
 	where P: AsRef<Path> + Debug
 {
-	let mut file = File::open(&value)
-		.expect(&*format!("to be able to open {value:?}"));
+	let mut file = File::open(&value).ok()?;
 
 	let mut contents: String = String::new();
 	file.read_to_string(&mut contents)
@@ -64,7 +65,7 @@ pub fn parse_dotenv<P>(value: P) -> DotEnv
 		})
 		.map(|(key, value)| keys.insert(key, value));
 
-	keys
+	Some(keys)
 }
 
 /// Get the requested variable from a [`DotEnv`] structure.

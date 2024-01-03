@@ -51,15 +51,14 @@ impl Cache {
 		value
 	}
 
-	/// Register a new `.env` file in the cache.
-	///
-	/// Equivalent to adding an item to [`Cache::envdot`].
+	/// Register a new `.env` file in the cache, if it exists.
 	#[cfg(feature = "envdot")]
 	pub fn register_dotenv<Path>(&mut self, path: Path)
 		where Path: AsRef<std::path::Path> + Debug
 	{
-		self.envdot.push(
-			crate::envdot::parse_dotenv(path)
-		);
+		let dotenv = crate::envdot::parse_dotenv(path);
+		if let Some(dotenv) = dotenv {
+			self.envdot.push(dotenv);
+		}
 	}
 }

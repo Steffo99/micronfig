@@ -32,15 +32,22 @@ impl Parse for ConfigItem {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
 		let identifier = input.parse::<Ident>()?;
 
-		input.parse::<Token![:]>()?;
-		input.parse::<Type>()?;
+		if input.lookahead1().peek(Token![:]) {
+			input.parse::<Token![:]>()?;
+			input.parse::<Type>()?;
 
-		let mut types = vec![];
-		while let Ok(typ) = input.parse::<ConfigPair>() {
-			types.push(typ)
+			let mut types = vec![];
+			while let Ok(typ) = input.parse::<ConfigPair>() {
+				types.push(typ)
+			}
+
+			Ok(Self { identifier, types })
+		}
+		else {
+			let types = vec![];
+			Ok(Self { identifier, types })
 		}
 
-		Ok(Self { identifier, types })
 	}
 }
 
@@ -75,10 +82,12 @@ pub fn config(input: TokenStream) -> TokenStream {
 	let input: Config = parse_macro_input!(input with syn::punctuated::Punctuated::parse_terminated);
 
 	let cache_code = quote! {
+		#[allow(non_snake_case)]
 		mod _cache {
 			pub static lock: std::sync::OnceLock<micronfig::cache::Cache> = std::sync::OnceLock::new();
 		}
 
+		#[allow(non_snake_case)]
 		fn _cache() -> &'static micronfig::cache::Cache {
 			_cache::lock.get_or_init(micronfig::cache::Cache::new)
 		}
@@ -124,10 +133,12 @@ pub fn config(input: TokenStream) -> TokenStream {
 		};
 
 		quote! {
+			#[allow(non_snake_case)]
 			mod #identifier {
 				pub(super) static lock: std::sync::OnceLock<Option<#last_type>> = std::sync::OnceLock::new();
 			}
 
+			#[allow(non_snake_case)]
 			pub(crate) fn #identifier() -> &'static Option<#last_type> {
 				#identifier::lock.get_or_init(|| {
 					let key: std::ffi::OsString = #identifier_string.into();
@@ -153,8 +164,6 @@ pub fn config(input: TokenStream) -> TokenStream {
 		#cache_code
 		#items_code
 	};
-
-	println!("{quote}");
 
 	quote.into()
 }

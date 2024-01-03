@@ -19,6 +19,7 @@ quote = "1.0"
 
 [dev-dependencies]
 micronfig = { version = "0.3.0", path = "../micronfig" }
+trybuild = "1.0.87"
 
 [lib]
 proc-macro = true
