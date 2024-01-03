@@ -1,6 +1,6 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::parse::{Parse, ParseStream};
 use syn::{Ident, parse_macro_input, Token, Type};
 use syn::punctuated::Punctuated;
@@ -34,7 +34,10 @@ impl Parse for ConfigItem {
 
 		if input.lookahead1().peek(Token![:]) {
 			input.parse::<Token![:]>()?;
-			input.parse::<Type>()?;
+			let string_type = input.parse::<Type>()?;
+			if string_type.to_token_stream().to_string() != "String" {
+				return Err(syn::Error::new_spanned(string_type, "first type of a conversion chain should always be `String`"))
+			}
 
 			let mut types = vec![];
 			while let Ok(typ) = input.parse::<ConfigPair>() {
@@ -47,7 +50,6 @@ impl Parse for ConfigItem {
 			let types = vec![];
 			Ok(Self { identifier, types })
 		}
-
 	}
 }
 
@@ -72,7 +74,7 @@ impl Parse for Conversion {
 			Ok(Conversion::FromStr)
 		}
 		else {
-			Err(input.error("Cannot determine conversion method to use; valid conversion tokens are `->` (From), `=>` (TryFrom) and `>` (FromStr)."))
+			Err(input.error("cannot determine conversion method to use; valid conversion tokens are `->` (From), `=>` (TryFrom) and `>` (FromStr)."))
 		}
 	}
 }
@@ -84,12 +86,12 @@ pub fn config(input: TokenStream) -> TokenStream {
 	let cache_code = quote! {
 		#[allow(non_snake_case)]
 		mod _cache {
-			pub static lock: std::sync::OnceLock<micronfig::cache::Cache> = std::sync::OnceLock::new();
+			pub static _lock: std::sync::OnceLock<micronfig::cache::Cache> = std::sync::OnceLock::new();
 		}
 
 		#[allow(non_snake_case)]
 		fn _cache() -> &'static micronfig::cache::Cache {
-			_cache::lock.get_or_init(micronfig::cache::Cache::new)
+			_cache::_lock.get_or_init(micronfig::cache::Cache::new)
 		}
 	};
 
@@ -135,12 +137,12 @@ pub fn config(input: TokenStream) -> TokenStream {
 		quote! {
 			#[allow(non_snake_case)]
 			mod #identifier {
-				pub(super) static lock: std::sync::OnceLock<Option<#last_type>> = std::sync::OnceLock::new();
+				pub(super) static _lock: std::sync::OnceLock<Option<#last_type>> = std::sync::OnceLock::new();
 			}
 
 			#[allow(non_snake_case)]
 			pub(crate) fn #identifier() -> &'static Option<#last_type> {
-				#identifier::lock.get_or_init(|| {
+				#identifier::_lock.get_or_init(|| {
 					let key: std::ffi::OsString = #identifier_string.into();
 					let value: Option<String> = _cache().get(&key);
 

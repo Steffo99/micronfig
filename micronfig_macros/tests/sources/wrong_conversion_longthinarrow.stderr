@@ -1,0 +1,11 @@
+error: expected `,`
+ --> tests/sources/wrong_conversion_longthinarrow.rs:2:20
+  |
+2 |     GARASAUTO: String --> u64,
+  |                       ^
+
+error[E0425]: cannot find function, tuple struct or tuple variant `GARASAUTO` in this scope
+ --> tests/sources/wrong_conversion_longthinarrow.rs:6:19
+  |
+6 |     println!("{:?}", GARASAUTO())
+  |                      ^^^^^^^^^ not found in this scope

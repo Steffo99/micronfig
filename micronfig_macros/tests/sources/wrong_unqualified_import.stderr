@@ -1,0 +1,9 @@
+error[E0412]: cannot find type `PathBuf` in this scope
+ --> tests/sources/wrong_unqualified_import.rs:4:22
+  |
+4 |     GARASAUTO: String > PathBuf,
+  |                         ^^^^^^^ not found in this scope
+  |
+  = help: consider importing one of these items:
+          crate::PathBuf
+          std::path::PathBuf

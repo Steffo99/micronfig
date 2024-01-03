@@ -1,0 +1,19 @@
+error[E0412]: cannot find type `PathBuf` in this scope
+ --> tests/sources/wrong_unqualified_noimport.rs:2:22
+  |
+2 |     GARASAUTO: String > PathBuf,
+  |                         ^^^^^^^ not found in this scope
+  |
+  = help: consider importing this struct:
+          std::path::PathBuf
+
+error[E0412]: cannot find type `PathBuf` in this scope
+ --> tests/sources/wrong_unqualified_noimport.rs:2:22
+  |
+2 |     GARASAUTO: String > PathBuf,
+  |                         ^^^^^^^ not found in this scope
+  |
+help: consider importing this struct
+  |
+1 + use std::path::PathBuf;
+  |
