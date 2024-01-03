@@ -22,3 +22,8 @@ pass!(string_single_implicit);
 pass!(string_multi_explicit);
 pass!(string_multi_implicit);
 pass!(string_multi_mixed);
+pass!(parse_single_u64);
+pass!(parse_single_i64);
+pass!(parse_single_ipaddr);
+pass!(parse_single_pathbuf_full);
+pass!(parse_single_pathbuf_use);
