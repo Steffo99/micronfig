@@ -29,8 +29,6 @@ enum Conversion {
 }
 
 
-const VALID_INITIAL_TYPES: [&'static str; 2] = ["String", "std::string::String"];
-
 impl Parse for ConfigItem {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
 		let identifier = input.parse::<Ident>()?;
@@ -47,8 +45,13 @@ impl Parse for ConfigItem {
 					.expect("this token to be parsed correctly, as it has been previously peeked");
 
 				let string_type = input.parse::<TypePath>()?;
-				if !VALID_INITIAL_TYPES.contains(&&*string_type.to_token_stream().to_string()) {
-					return Err(syn::Error::new_spanned(string_type, "first type of a conversion chain should always be `String` or `std::string::String`, type aliases are not allowed"))
+				if &*string_type.to_token_stream().to_string() != "String" {
+					return Err(
+						syn::Error::new_spanned(
+							string_type,
+							"first type of a conversion chain should always be literally `String`, other aliases are not allowed"
+						)
+					);
 				}
 
 				let mut types = Vec::new();
@@ -130,19 +133,17 @@ pub fn config(input: TokenStream) -> TokenStream {
 				match (conversion, item.optional) {
 					(Conversion::From, true) => quote! {
 						let value: Option<#typ> = value
-							.map(std::convert::Into::into);
+							.map(|v| v.into());
 					},
 					(Conversion::TryFrom, true) => quote! {
 						let value: Option<#typ> = value
-							.map(std::convert::TryInto::try_into)
-							.map(|v| v.expect(&format!("to be able to convert {}", #identifier_string))
-						);
+							.map(|v| v.try_into())
+							.map(|v| v.expect(&format!("to be able to convert {}", #identifier_string)));
 					},
 					(Conversion::FromStr, true) => quote! {
 						let value: Option<#typ> = value
-							.map(str::parse)
-							.map(|v| v.expect(&format!("to be able to parse {}", #identifier_string))
-						);
+							.map(|v| v.parse())
+							.map(|v| v.expect(&format!("to be able to parse {}", #identifier_string)));
 					},
 					(Conversion::From, false) => quote! {
 						let value: #typ = value
@@ -182,7 +183,7 @@ pub fn config(input: TokenStream) -> TokenStream {
 			pub(crate) fn #identifier() -> &'static #type_final_option {
 				#identifier::_lock.get_or_init(|| {
 					let key: std::ffi::OsString = #identifier_string.into();
-					let value: Option<String> = _cache().get(&key);
+					let value: Option<std::string::String> = _cache().get(&key);
 
 					#require_code
 					#conversion_code

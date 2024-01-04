@@ -4,5 +4,5 @@ micronfig::config! {
 
 fn main() {
 	std::env::set_var("GARASAUTO", "./garas");
-	assert_eq!(GARASAUTO(), std::path::PathBuf::from("./garas"));
+	assert_eq!(GARASAUTO(), &std::path::PathBuf::from("./garas"));
 }

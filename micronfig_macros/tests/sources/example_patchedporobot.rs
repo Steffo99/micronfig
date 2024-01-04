@@ -1,11 +1,13 @@
 use std::str::FromStr;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct CommaSeparatedStrings(Vec<String>);
 
 impl FromStr for CommaSeparatedStrings {
+	type Err = ();
+
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		Self(s.split(',').collect())
+		Ok(Self(s.split(',').map(|v| v.to_string()).collect()))
 	}
 }
 
@@ -25,8 +27,8 @@ fn main() {
 	std::env::remove_var("SERENITY_DEV_GUILD_ID");
 
 	assert_eq!(DATA_DRAGON_LOCALE(), "it_IT");
-	assert_eq!(DATA_DRAGON_SET_CODES(), CommaSeparatedStrings(vec!["set1", "set2abc"]));
-	assert_eq!(POROXY_KEY, "abcdef");
-	assert_eq!(POROXY_SALT, "abcdef");
-	assert_eq!(SERENITY_DEV_GUILD_ID, &None);
+	assert_eq!(DATA_DRAGON_SET_CODES(), &CommaSeparatedStrings(vec!["set1".to_string(), "set2abc".to_string()]));
+	assert_eq!(POROXY_KEY(), "abcdef");
+	assert_eq!(POROXY_SALT(), "abcdef");
+	assert_eq!(SERENITY_DEV_GUILD_ID(), &None);
 }

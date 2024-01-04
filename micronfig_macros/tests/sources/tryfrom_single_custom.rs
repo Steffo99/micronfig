@@ -1,4 +1,4 @@
-#[derive(std::fmt::Debug, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 struct MyCustomStruct(String);
 
 impl std::convert::TryFrom<String> for MyCustomStruct {
@@ -15,5 +15,5 @@ micronfig::config! {
 
 fn main() {
 	std::env::set_var("GARASAUTO", "me");
-	assert_eq!(GARASAUTO(), &MyCustomStruct("me"));
+	assert_eq!(GARASAUTO(), &MyCustomStruct("me".to_string()));
 }
