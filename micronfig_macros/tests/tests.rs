@@ -19,15 +19,18 @@ macro_rules! fail {
 pass!(chain_single_down);
 pass!(chain_single_up);
 pass!(empty);
+pass!(example_patchedporobot);
 pass!(from_single_custom);
 pass!(parse_single_custom);
 pass!(parse_single_i64);
 pass!(parse_single_pathbuf);
 pass!(parse_single_u64);
+pass!(parse_single_u64_optional);
 pass!(string_multi_explicit);
 pass!(string_multi_implicit);
 pass!(string_multi_mixed);
 pass!(string_single_explicit);
+pass!(string_single_expliciter);
 pass!(string_single_implicit);
 pass!(tryfrom_single_custom);
 

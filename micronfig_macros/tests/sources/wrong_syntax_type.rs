@@ -3,5 +3,6 @@ micronfig::config! {
 }
 
 fn main() {
-	println!("{:?}", GARASAUTO())
+	std::env::set_var("GARASAUTO", "garasauto");
+	println!("{:#?}", GARASAUTO());
 }

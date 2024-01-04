@@ -1,4 +1,4 @@
-#[derive(std::fmt::Debug)]
+#[derive(std::fmt::Debug, Eq)]
 struct MyCustomStruct(String);
 
 impl std::str::FromStr for MyCustomStruct {
@@ -14,5 +14,6 @@ micronfig::config! {
 }
 
 fn main() {
-	println!("{:?}", GARASAUTO())
+	std::env::set_var("GARASAUTO", "keke");
+	assert_eq!(GARASAUTO(), &MyCustomStruct("keke"));
 }

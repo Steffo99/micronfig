@@ -3,5 +3,6 @@ micronfig::config! {
 }
 
 fn main() {
-	println!("{:?}", GARASAUTO())
+	std::env::set_var("GARASAUTO", "./garas");
+	assert_eq!(GARASAUTO(), std::path::PathBuf::from("./garas"));
 }

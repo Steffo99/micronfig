@@ -5,7 +5,7 @@ error: expected `,`
   |               ^^^^^^
 
 error[E0425]: cannot find function, tuple struct or tuple variant `GARASAUTO` in this scope
- --> tests/sources/wrong_syntax_type.rs:6:19
+ --> tests/sources/wrong_syntax_type.rs:7:19
   |
-6 |     println!("{:?}", GARASAUTO())
+7 |     println!("{:?}", GARASAUTO())
   |                      ^^^^^^^^^ not found in this scope

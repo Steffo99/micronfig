@@ -3,5 +3,6 @@ micronfig::config! {
 }
 
 fn main() {
-	println!("{:?}", GARASAUTO())
+	std::env::set_var("GARASAUTO", "fieraereo");
+	assert_eq!(GARASAUTO(), "fieraereo");
 }

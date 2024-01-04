@@ -3,5 +3,6 @@ micronfig::config! {
 }
 
 fn main() {
-	println!("{:?}", GARASAUTO())
+	std::env::set_var("GARASAUTO", "1");
+	assert_eq!(GARASAUTO(), &1u64);
 }
