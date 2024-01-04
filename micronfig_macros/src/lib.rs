@@ -182,8 +182,8 @@ pub fn config(input: TokenStream) -> TokenStream {
 			#[allow(non_snake_case)]
 			pub(crate) fn #identifier() -> &'static #type_final_option {
 				#identifier::_lock.get_or_init(|| {
-					let key: std::ffi::OsString = #identifier_string.into();
-					let value: Option<std::string::String> = _cache().get(&key);
+					let key = #identifier_string.as_ref();
+					let value: Option<std::string::String> = _cache().get(key);
 
 					#require_code
 					#conversion_code

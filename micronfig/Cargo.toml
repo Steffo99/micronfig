@@ -22,3 +22,6 @@ envdot = ["regex"]
 [dependencies]
 micronfig_macros = { version = "0.3.0", path = "../micronfig_macros" }
 regex = { version = "1.10.2", optional = true }
+
+[dev-dependencies]
+tempfile = { version = "3.9.0" }

@@ -21,3 +21,34 @@ pub fn get(key: &OsStr) -> Option<String> {
 
 	Some(data)
 }
+
+
+#[cfg(test)]
+pub(crate) mod tests {
+	use super::*;
+	use crate::testing::tempfile_fixture;
+
+	#[test]
+	fn it_works() {
+		let file = tempfile_fixture("XYZ");
+		std::env::set_var("LETTERS_FILE", file.as_os_str());
+
+		let value = get("LETTERS".as_ref());
+		assert_eq!(value, Some("XYZ".to_string()));
+	}
+
+	#[test]
+	fn missing_envvar() {
+		std::env::remove_var("THIS_ENVVAR_DOES_NOT_EXIST_FILE");
+		let value = get("THIS_ENVVAR_DOES_NOT_EXIST".as_ref());
+		assert_eq!(value, None)
+	}
+
+	#[test]
+	#[should_panic]
+	fn missing_file() {
+		std::env::set_var("NONEXISTENT_FILE", "/this/file/does/not/exist");
+		let value = get("NONEXISTENT".as_ref());
+		println!("{:?}", value);
+	}
+}
