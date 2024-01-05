@@ -1,0 +1,5 @@
+error: expected identifier
+ --> tests/sources/wrong_nonsense_3.rs:2:2
+  |
+2 |     ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+  |     ^

@@ -1,0 +1,28 @@
+error[E0277]: the trait bound `Infallible: FromStr` is not satisfied
+ --> tests/sources/wrong_conversion_trait_fromstr.rs:1:1
+  |
+1 | / micronfig::config! {
+2 | |     GARASAUTO: String > std::convert::Infallible,
+3 | | }
+  | | ^
+  | | |
+  | |_the trait `FromStr` is not implemented for `Infallible`
+  |   in this macro invocation
+  |
+ ::: src/lib.rs
+  |
+  |   pub fn config(input: TokenStream) -> TokenStream {
+  |   ------------------------------------------------ in this expansion of `micronfig::config!`
+  |
+  = help: the following other types implement trait `FromStr`:
+            bool
+            char
+            isize
+            i8
+            i16
+            i32
+            i64
+            i128
+          and $N others
+note: required by a bound in `core::str::<impl str>::parse`
+ --> $RUST/core/src/str/mod.rs

@@ -1,8 +1,0 @@
-[package]
-name = "e01_the_cave"
-description = "Echoes back the value of ECHO."
-version = "0.0.0"
-edition = "2021"
-
-[dependencies]
-micronfig = { path = "../.." }

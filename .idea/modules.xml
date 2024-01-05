@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/micronfig.iml" filepath="$PROJECT_DIR$/.idea/micronfig.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_workspace.iml" filepath="$PROJECT_DIR$/_workspace.iml" />
+      <module fileurl="file://$PROJECT_DIR$/micronfig/micronfig.iml" filepath="$PROJECT_DIR$/micronfig/micronfig.iml" />
+      <module fileurl="file://$PROJECT_DIR$/micronfig_macros/micronfig_macros.iml" filepath="$PROJECT_DIR$/micronfig_macros/micronfig_macros.iml" />
     </modules>
   </component>
 </project>

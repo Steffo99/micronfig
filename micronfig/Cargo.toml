@@ -1,0 +1,26 @@
+[package]
+name = "micronfig"
+version = "0.3.0"
+authors = ["Stefano Pigozzi <me@steffo.eu>"]
+edition = "2021"
+description = "Macro-based configuration management"
+repository = "https://github.com/Steffo99/micronfig/"
+license = "MIT OR Apache-2.0"
+keywords = ["twelve-factor-app", "configuration", "config", "environment", "envvar"]
+categories = ["config"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["envvars", "envfiles", "envdot"]
+envvars = []
+envfiles = []
+envdot = ["regex"]
+
+[dependencies]
+micronfig_macros = { version = "0.3.0", path = "../micronfig_macros" }
+regex = { version = "1.10.2", optional = true }
+
+[dev-dependencies]
+tempfile = { version = "3.9.0" }
