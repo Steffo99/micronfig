@@ -3,7 +3,12 @@
 Tiny crate for simple configuration management.
 
 ```rust
-micronfig::required!(IP_ADDRESS, std::net::IpAddr);
+micronfig::config! {
+	DATABASE_URI,
+	APPLICATION_NAME: String,
+	MAX_CONCURRENT_USERS: String > u64,
+	SHOWN_ALERT?,
+}
 ```
 
 ## Links
