@@ -43,11 +43,13 @@
 //! # std::env::set_var("VARIABLE_C", "c");
 //! # std::env::set_var("PATH", "/bin");
 //! #
+//! # if cfg!(feature = "envvars") {
 //! // These will all return `&'static str` values.
 //! println!("{}", VARIABLE_A());
 //! println!("{}", VARIABLE_B());
 //! println!("{}", VARIABLE_C());
 //! println!("{}", PATH());
+//! # }
 //! ```
 //!
 //! > ***Note***
@@ -170,6 +172,8 @@
 //!
 //! By default, all of them are enabled.
 //!
+
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Steffo99/micronfig/main/icon.png")]
 
 /// The macro described at the crate's root.
 pub use micronfig_macros::config;

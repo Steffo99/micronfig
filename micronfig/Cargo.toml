@@ -11,7 +11,6 @@ categories = ["config"]
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--document-private-items"]
 
 [features]
 default = ["envvars", "envfiles", "envdot"]

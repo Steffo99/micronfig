@@ -169,7 +169,7 @@ pub fn config(input: TokenStream) -> TokenStream {
 			true => quote! {},
 			false => quote! {
 				let value: String = value
-					.expect(&format!("to be have {} set", #identifier_string));
+					.expect(&format!("that configuration variable {} was set", #identifier_string));
 			},
 		};
 
