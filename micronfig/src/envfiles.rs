@@ -1,4 +1,4 @@
-//! Contents of files at paths defined by environment variables.
+//! **Private**; utilities for fetching configuration values from contents of files at paths defined by environment variables.
 
 use std::ffi::OsStr;
 use std::io::Read;
@@ -21,7 +21,6 @@ pub fn get(key: &OsStr) -> Option<String> {
 
 	Some(data)
 }
-
 
 #[cfg(test)]
 pub(crate) mod tests {

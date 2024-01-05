@@ -1,4 +1,4 @@
-//! Environment variables.
+//! **Private**; utilities for fetching configuration values from environment variables.
 
 use std::ffi::OsStr;
 
@@ -6,7 +6,6 @@ use std::ffi::OsStr;
 pub fn get(key: &OsStr) -> Option<String> {
 	std::env::var(key).ok()
 }
-
 
 #[cfg(test)]
 pub(crate) mod tests {

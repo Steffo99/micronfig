@@ -1,3 +1,5 @@
+/// **Private**; utilities for testing.
+
 pub fn tempfile_fixture(content: &str) -> tempfile::TempPath {
 	use std::io::Write;
 
