@@ -171,7 +171,7 @@
 //! By default, all of them are enabled.
 //!
 
-/// The macro described [at the crate's root](micronfig).
+/// The macro described at the crate's root.
 pub use micronfig_macros::config;
 
 pub mod cache;
