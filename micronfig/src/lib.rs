@@ -173,7 +173,7 @@
 //! By default, all of them are enabled.
 //!
 
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Steffo99/micronfig/main/icon.png")]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Steffo99/micronfig/main/.media/icon-128x128_round.png")]
 
 /// The macro described at the crate's root.
 pub use micronfig_macros::config;

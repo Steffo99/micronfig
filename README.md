@@ -1,22 +1,15 @@
-# ![](icon.png) micronfig
+<div align="center">
 
-Tiny crate for simple configuration management.
+![](.media/icon-128x128_round.png)
 
-```rust
-micronfig::config! {
-	DATABASE_URI,
-	APPLICATION_NAME: String,
-	MAX_CONCURRENT_USERS: String > u64,
-	SHOWN_ALERT?,
-}
-```
+# micronfig
+
+Configuration helper for Rust
+
+</div>
 
 ## Links
 
 [![Crates.io](https://img.shields.io/crates/v/micronfig)](https://crates.io/crates/micronfig)
  
 [![Documentation](https://img.shields.io/docsrs/micronfig)](https://docs.rs/micronfig/latest/micronfig/)
-
-## Acknowledgements
-
-Icon made with [Font Awesome](https://fontawesome.com/) ([CC-BY-4.0](https://fontawesome.com/license/free)) and [Emblematic](https://github.com/Steffo99/emblematic/)
