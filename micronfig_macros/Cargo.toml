@@ -22,3 +22,6 @@ trybuild = "1.0.87"
 
 [lib]
 proc-macro = true
+
+[lints.clippy]
+tabs-in-doc-comments = "allow"

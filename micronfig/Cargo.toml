@@ -24,3 +24,6 @@ regex = { version = "1.10.2", optional = true }
 
 [dev-dependencies]
 tempfile = { version = "3.9.0" }
+
+[lints.clippy]
+tabs-in-doc-comments = "allow"
