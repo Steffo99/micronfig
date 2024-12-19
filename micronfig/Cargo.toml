@@ -1,6 +1,6 @@
 [package]
 name = "micronfig"
-version = "0.3.1"
+version = "1.0.0"
 authors = ["Stefano Pigozzi <me@steffo.eu>"]
 edition = "2021"
 description = "Macro-based configuration management"
@@ -19,7 +19,7 @@ envfiles = []
 envdot = ["regex"]
 
 [dependencies]
-micronfig_macros = { version = "0.3.1", path = "../micronfig_macros" }
+micronfig_macros = { version = "1.0.0", path = "../micronfig_macros" }
 regex = { version = "1.10.2", optional = true }
 
 [dev-dependencies]
