@@ -1,11 +1,27 @@
-error: first type of a conversion chain should always be literally `String`, other aliases are not allowed
- --> tests/sources/wrong_start.rs:2:13
+error[E0308]: mismatched types
+ --> tests/sources/wrong_start.rs:1:1
   |
-2 |     GARASAUTO: i64,
-  |                ^^^
+1 | / micronfig::config! {
+2 | |     GARASAUTO: i64,
+3 | | }
+  | | ^
+  | | |
+  | |_expected `Option<i64>`, found `Option<String>`
+  |   expected due to this
+  |
+  = note: expected enum `Option<i64>`
+             found enum `Option<String>`
+  = note: this error originates in the macro `micronfig::config` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0425]: cannot find function, tuple struct or tuple variant `GARASAUTO` in this scope
- --> tests/sources/wrong_start.rs:7:20
+error[E0308]: mismatched types
+ --> tests/sources/wrong_start.rs:1:1
   |
-7 |     println!("{:#?}", GARASAUTO());
-  |                       ^^^^^^^^^ not found in this scope
+1 | / micronfig::config! {
+2 | |     GARASAUTO: i64,
+3 | | }
+  | | ^- help: try using a conversion method: `.to_string()`
+  | | |
+  | |_expected `String`, found `i64`
+  |   expected due to this
+  |
+  = note: this error originates in the macro `micronfig::config` (in Nightly builds, run with -Z macro-backtrace for more info)

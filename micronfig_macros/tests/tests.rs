@@ -34,6 +34,7 @@ pass!(string_multi_mixed);
 pass!(string_single_explicit);
 pass!(string_single_implicit);
 pass!(tryfrom_single_custom);
+pass!(unqualified_import);
 
 fail!(wrong_conversion_longfatarrow);
 fail!(wrong_conversion_longthinarrow);
@@ -47,5 +48,4 @@ fail!(wrong_nonsense_3);
 fail!(wrong_start);
 fail!(wrong_syntax_colon);
 fail!(wrong_syntax_type);
-fail!(wrong_unqualified_import);
 fail!(wrong_unqualified_noimport);

@@ -1,26 +1,19 @@
-error[E0277]: the trait bound `u64: From<String>` is not satisfied
+error[E0277]: the trait bound `u64: TryFrom<String>` is not satisfied
  --> tests/sources/wrong_conversion_trait_tryfrom.rs:1:1
   |
 1 | / micronfig::config! {
 2 | |     GARASAUTO: String => u64,
 3 | | }
-  | | ^
-  | | |
-  | |_the trait `From<String>` is not implemented for `u64`
-  |   in this macro invocation
-  |
- ::: src/lib.rs
-  |
-  |   pub fn config(input: TokenStream) -> TokenStream {
-  |   ------------------------------------------------ in this expansion of `micronfig::config!`
+  | |_^ the trait `From<String>` is not implemented for `u64`, which is required by `String: TryInto<_>`
   |
   = help: the following other types implement trait `From<T>`:
-            <u64 as From<bool>>
-            <u64 as From<char>>
-            <u64 as From<u8>>
-            <u64 as From<u16>>
-            <u64 as From<u32>>
-            <u64 as From<NonZeroU64>>
+            `u64` implements `From<Char>`
+            `u64` implements `From<bool>`
+            `u64` implements `From<char>`
+            `u64` implements `From<u16>`
+            `u64` implements `From<u32>`
+            `u64` implements `From<u8>`
   = note: required for `String` to implement `Into<u64>`
   = note: required for `u64` to implement `TryFrom<String>`
   = note: required for `String` to implement `TryInto<u64>`
+  = note: this error originates in the macro `micronfig::config` (in Nightly builds, run with -Z macro-backtrace for more info)
