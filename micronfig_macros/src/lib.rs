@@ -169,7 +169,7 @@ pub fn config(input: TokenStream) -> TokenStream {
 			true => quote! {},
 			false => quote! {
 				let value: String = value
-					.unwrap_or_else(|_| panic!("Unset configuration variable: {}", #identifier_string));
+					.unwrap_or_else(|| panic!("Unset configuration variable: {}", #identifier_string));
 			},
 		};
 
