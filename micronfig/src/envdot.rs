@@ -21,7 +21,7 @@ pub fn parse_dotenv<P>(value: P) -> Option<DotEnv>
 
 	let mut contents: String = String::new();
 	file.read_to_string(&mut contents)
-		.expect(&format!("to be able to read {value:?}"));
+		.unwrap_or_else(|_| panic!("to be able to read {value:?}"));
 
 	let mut keys: HashMap<OsString, String> = HashMap::new();
 

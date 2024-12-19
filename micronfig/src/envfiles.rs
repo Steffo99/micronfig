@@ -13,11 +13,11 @@ pub fn get(key: &OsStr) -> Option<String> {
 	let path = std::path::PathBuf::from(path);
 
 	let mut file = std::fs::File::open(&path)
-		.expect(&format!("to be able to open file at {path:?}"));
+		.unwrap_or_else(|_| panic!("to be able to open file at {path:?}"));
 
 	let mut data = String::new();
 	file.read_to_string(&mut data)
-		.expect(&format!("to be able to read from file at {path:?}"));
+		.unwrap_or_else(|_| panic!("to be able to read from file at {path:?}"));
 
 	Some(data)
 }
