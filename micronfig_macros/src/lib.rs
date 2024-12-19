@@ -138,12 +138,12 @@ pub fn config(input: TokenStream) -> TokenStream {
 					(Conversion::TryFrom, true) => quote! {
 						let value: Option<#typ> = value
 							.map(|v| v.try_into())
-							.map(|v| v.expect(&format!("to be able to convert {}", #identifier_string)));
+							.map(|v| v.unwrap_or_else(|err| panic!("Couldn't perform conversion `{:?} => {:?}`: {:#?}", v, #identifier_string, err)));
 					},
 					(Conversion::FromStr, true) => quote! {
 						let value: Option<#typ> = value
 							.map(|v| v.parse())
-							.map(|v| v.expect(&format!("to be able to parse {}", #identifier_string)));
+							.map(|v| v.unwrap_or_else(|err| panic!("Couldn't perform conversion `{:?} > {:?}`: {:#?}", v, #identifier_string, err)));
 					},
 					(Conversion::From, false) => quote! {
 						let value: #typ = value
@@ -152,12 +152,12 @@ pub fn config(input: TokenStream) -> TokenStream {
 					(Conversion::TryFrom, false) => quote! {
 						let value: #typ = value
 							.try_into()
-							.expect(&format!("to be able to convert {}", #identifier_string));
+							.unwrap_or_else(|err| panic!("Couldn't perform conversion `{:?} => {:?}`: {:#?}", value, #identifier_string, err));
 					},
 					(Conversion::FromStr, false) => quote! {
 						let value: #typ = value
 							.parse()
-							.expect(&format!("to be able to parse {}", #identifier_string));
+							.unwrap_or_else(|err| panic!("Couldn't perform conversion `{:?} > {:?}`: {:#?}", value, #identifier_string, err));
 					},
 				}
 			}
@@ -169,7 +169,7 @@ pub fn config(input: TokenStream) -> TokenStream {
 			true => quote! {},
 			false => quote! {
 				let value: String = value
-					.expect(&format!("that configuration variable {} was set", #identifier_string));
+					.unwrap_or_else(|_| panic!("Unset configuration variable: {}", #identifier_string));
 			},
 		};
 
