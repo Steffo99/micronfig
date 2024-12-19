@@ -94,11 +94,13 @@
 //! The syntax for conversion is as follows:
 //!
 //! ```
+//! use std::net::SocketAddr;
+//!
 //! micronfig::config! {
 //!  	// use FromStr to parse the String as an isize
 //! 	REQUIRED_SIGNED: String > isize,
 //!  	// use FromStr to parse the String as a SocketAddr
-//!  	REQUIRED_SOCKETADDR: String > std::net::SocketAddr,
+//!  	REQUIRED_SOCKETADDR: String > SocketAddr,
 //! 	// use From to convert the String to... another String
 //! 	REQUIRED_STRING: String -> String,
 //! 	// use TryFrom to convert the String to another String
@@ -108,10 +110,6 @@
 //!		OPTIONAL_UNSIGNED?: String > usize,
 //! }
 //! ```
-//!
-//! > ***Warning***
-//! >
-//! > Types should always be fully qualified, or the macro won't work properly!
 //!
 //! Custom types can be used as well:
 //!
@@ -131,7 +129,7 @@
 //! }
 //!
 //! micronfig::config! {
-//! 	MY_CUSTOM_TYPE: String -> crate::Duplicator,
+//! 	MY_CUSTOM_TYPE: String -> Duplicator,
 //! }
 //!
 //! # fn main() {}
@@ -150,7 +148,7 @@
 //!
 //! micronfig::config! {
 //! 	// First parse the string as an u64 with FromStr, then convert it to a ChatId with From.
-//! 	RESPOND_TO_MESSAGES_IN: String > u64 -> crate::ChatId,
+//! 	RESPOND_TO_MESSAGES_IN: String > u64 -> ChatId,
 //! }
 //!
 //! # fn main() {}
